@@ -43,7 +43,11 @@ namespace API
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddCors();  //added by FRS
+
             services.AddControllers();
+
+         
 
             services.AddSwaggerGen(c =>
             {
@@ -55,6 +59,7 @@ namespace API
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        //FRS: ordering here really matters. so be careful
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -68,6 +73,13 @@ namespace API
 
             app.UseRouting(); //for us to navigate through url 
 
+            //added FRS
+            //allow any header- allow headers such as authentication coming from angular
+            //allow any method - allow any methods such as PUT, GET POST
+            //the url is the angular url
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));          
+            //
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
