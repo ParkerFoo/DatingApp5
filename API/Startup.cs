@@ -14,6 +14,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using API.Entities;
+using API.interfaces;
+using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using API.Extensions;
 
 namespace API
 {
@@ -37,22 +43,40 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            //added by FRS
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
+            //commented because already moved to ApplicationServicesExtensions.cs
+            // //added by FRS
+            // services.AddDbContext<DataContext>(options =>
+            // {
+            //     options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
+            // });           
+
+            // services.AddScoped<ITokenService, TokenService>(); //added by FRS
+            services.AddApplicationServices(_config); //added by FRS
+
 
             services.AddCors();  //added by FRS
 
-            services.AddControllers();
 
+            services.AddControllers();
          
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+
+            //commented because already moved to IdentityServiceExtensions.cs
+            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options=>
+            // {
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //         ValidateIssuerSigningKey=true,  // important line. means api validate the key set to true
+            //         IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),  // important line. get the signing key
+            //        ValidateIssuer=false, //api server
+            //         ValidateAudience=false //angular application
+            //    };
+            // });
+            services.AddIdentityServiceExtensions(_config); //added by FRS
 
         }
 
@@ -80,6 +104,8 @@ namespace API
             app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));          
             //
             
+            app.UseAuthentication(); //added by FRS
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
