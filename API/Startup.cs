@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using API.Extensions;
+using API.Middleware;
 
 namespace API
 {
@@ -86,12 +87,14 @@ namespace API
         //FRS: ordering here really matters. so be careful
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
-            }
+            //commented by FRS to replace the code below
+            // if (env.IsDevelopment())
+            // {
+            //  //   app.UseDeveloperExceptionPage();
+            //     app.UseSwagger();
+            //     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
+            // }
+            app.UseMiddleware<ExceptionMiddleware>(); 
 
             app.UseHttpsRedirection(); //if http, redirect to https endpoint 
 

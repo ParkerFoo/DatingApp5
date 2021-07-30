@@ -13,7 +13,7 @@ export class AppComponent implements OnInit{ //OnInit comes after the constructo
   users : any;
 
   //below is dependency injection
-  constructor(private http: HttpClient, private accountService: AccountService) {} //private variable of http with the type of httpclient which will performs http requests
+  constructor(private http: HttpClient, private accountService: AccountService) {} //private variable of http with the type of httpclient which will perform http requests
 
   ngOnInit() {
  // this.getUsers();

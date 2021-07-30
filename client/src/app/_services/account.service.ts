@@ -5,7 +5,7 @@ import {map} from 'rxjs/operators';
 import { User } from '../_models/user';
 
 @Injectable({ //injectable means it can be injected to other services and components
-  providedIn: 'root'
+  providedIn: 'root' 
 })
 export class AccountService { //services is a singleton,only when user close the application it will get destroyed; 
   //component is not, it will get destroyed as soon as they are not in use
