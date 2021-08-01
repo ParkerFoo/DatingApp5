@@ -42,7 +42,7 @@ export class ErrorInterceptor implements HttpInterceptor { //error interceptor w
               break;
             case 500:
               const navigationExtras: NavigationExtras = {state:{error:error.error}}; //get the details the error return from the API
-              console.log("HMMM "+ navigationExtras);
+              console.log( navigationExtras);
               this.router.navigateByUrl('/server-error',navigationExtras);
               break;
             default:
