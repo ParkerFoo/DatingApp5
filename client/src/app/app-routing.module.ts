@@ -19,7 +19,7 @@ const routes: Routes = [
   canActivate:[AuthGuard], //[AuthGuard] is an array. Can pass as many AuthGuard, but in this case, we only have 1 for now
   children:[
     {path:'members',component:MemberListComponent},
-    {path:'members/:id',component:MemberDetailComponent},
+    {path:'members/:username',component:MemberDetailComponent},
     {path:'lists',component:ListsComponent},
     {path:'messages',component:MessagesComponent},
   ]  
