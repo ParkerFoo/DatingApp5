@@ -22,8 +22,9 @@ currentUser$=this._currentUserSource.asObservable(); //returns observable with t
       map((response: User) => {
         const user=response;
         if (user){//check if we received user or not from the API
-           localStorage.setItem('user',JSON.stringify(user));  //create a local storage with the name called user
-           this._currentUserSource.next(user);
+          // localStorage.setItem('user',JSON.stringify(user));  //create a local storage with the name called user
+          // this._currentUserSource.next(user);
+          this.setCurrentUser(user);
         }
       })
     )
@@ -35,8 +36,9 @@ currentUser$=this._currentUserSource.asObservable(); //returns observable with t
     map((response:User)=>{
       const user=response;
       if (user){
-        localStorage.setItem('user',JSON.stringify(user));
-        this._currentUserSource.next(user);
+       // localStorage.setItem('user',JSON.stringify(user));
+       // this._currentUserSource.next(user);
+        this.setCurrentUser(user);
       }
       return user;
     })
@@ -46,6 +48,7 @@ currentUser$=this._currentUserSource.asObservable(); //returns observable with t
 
 
 setCurrentUser(user:User){
+  localStorage.setItem('user', JSON.stringify(user));  //create a local storage with the name called user
   this._currentUserSource.next(user);
     console.log('_currentUserSource: ' + this._currentUserSource);
 }

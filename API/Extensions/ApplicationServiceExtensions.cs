@@ -24,6 +24,10 @@ namespace API.Extensions
 
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly); //added by FRS. This will find the mapping we crate in the AutoMapperProfiles
 
+            services.Configure<CloudinarySettings>(_config.GetSection("CloudinarySettings")); //added by FRS
+
+            services.AddScoped<IPhotoService,PhotoService>(); //added by FRS
+
             return services;
         }
     }
