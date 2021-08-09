@@ -6,6 +6,7 @@ using API.Data;
 using API.DTO;
 using API.Entities;
 using API.interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,14 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AccountController(DataContext context, ITokenService tokenService)
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
+            _mapper = mapper;
             _tokenService = tokenService;
             _context = context;
+
         }
 
 
@@ -35,15 +39,17 @@ namespace API.Controllers
 
             if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
 
+            var user = _mapper.Map<AppUser>(registerDto);
+
+
 
             using var hmac = new HMACSHA512(); //initalize the algo for HHAMCSHA512
 
-            var user = new AppUser
-            {
-                UserName = registerDto.Username.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)), //ComputeHash receives byte array as parameter and return byte array. It basically creates the hash. Encoding UTF8 getbytes will turn string into bytes array.  
-                PasswordSalt = hmac.Key
-            };            
+
+            user.UserName = registerDto.Username.ToLower();
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)); //ComputeHash receives byte array as parameter and return byte array. It basically creates the hash. Encoding UTF8 getbytes will turn string into bytes array.  
+            user.PasswordSalt = hmac.Key;
+
 
             _context.Users.Add(user); //the add() you dont actually add it into db yet, it only tracks it in EF
             await _context.SaveChangesAsync(); //this is when its truly saving into DB.            
@@ -52,8 +58,9 @@ namespace API.Controllers
 
             return new UserDto
             {
-                Username= user.UserName,
-                Token=_tokenService.CreateToken(user)
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user),
+                KnownAs=user.KnownAs                
             };
         }
 
@@ -64,7 +71,7 @@ namespace API.Controllers
         {
             //find the username in the DB based on the username passed through the request
             var user = await _context.Users
-            .Include(p=>p.Photos) //if don't include this, line 89 will have problem 
+            .Include(p => p.Photos) //if don't include this, line 89 will have problem 
             .SingleOrDefaultAsync(x => x.UserName == loginDto.Username);
 
             if (user == null) return Unauthorized("Invalid username");
@@ -86,7 +93,8 @@ namespace API.Controllers
             {
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                PhotoUrl=user.Photos.FirstOrDefault(x=>x.IsMain)?.Url //if no main, return null due to optional chaining
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,//if no main, return null due to optional chaining
+                KnownAs=user.KnownAs
             };
         }
 
