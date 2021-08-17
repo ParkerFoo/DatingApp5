@@ -25,7 +25,9 @@ namespace API.Services
         {
            var claims=new List<Claim>
            {
-               new Claim(JwtRegisteredClaimNames.NameId, user.UserName) //claim of nameid with the value of the user's username
+               //new Claim(JwtRegisteredClaimNames.NameId, user.UserName) //claim of nameid with the value of the user's username
+               new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),//claim of nameid with the value of the user's Id
+               new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName) //claim of nameid with the value of the user's username
            };
             //pass in the private key and the strongest algorithm which is HmacSha512
            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);

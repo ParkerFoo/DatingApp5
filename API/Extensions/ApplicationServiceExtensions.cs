@@ -28,6 +28,8 @@ namespace API.Extensions
 
             services.AddScoped<IPhotoService,PhotoService>(); //added by FRS
 
+            services.AddScoped<LogUserActivity>(); //added by FRS
+
             return services;
         }
     }

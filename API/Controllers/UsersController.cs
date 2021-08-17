@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -40,7 +41,7 @@ namespace API.Controllers
         //api/users
         //[AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
         {
             //  var users=_context.Users.ToListAsync();
             // return  await users;
@@ -52,8 +53,17 @@ namespace API.Controllers
             //map from users to memberdto
             //var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
 
-            var usersToReturn = await _userRepository.GetMembersAsync();
-            return Ok(usersToReturn);
+            var user=await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            userParams.CurrentUsername=user.UserName;
+
+            if(string.IsNullOrEmpty(userParams.Gender))
+            userParams.Gender=user.Gender =="male"?"female":"male";
+
+            var users = await _userRepository.GetMembersAsync(userParams);
+
+            Response.AddPaginationHeader(users.CurrentPage,users.PageSize,users.TotalCount,users.TotalPages);
+
+            return Ok(users);
         }
 
         //api/users/1
